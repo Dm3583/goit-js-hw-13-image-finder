@@ -30,23 +30,19 @@ body {
 }
 
 .card-item{
-  /* display: block; */
-    max-width:calc(100% / 6);
-  /* max-width:calc((100% / 6) - 50px); */
-  /* margin-right: 10px; */
-  margin-bottom: 10px;
+
+  max-width:calc(100% / 6);
+  padding: 10px;
   height: 400px;
-  padding: 5px;
-  border: 1px solid gray;
-}
 
-.card-item:nth-child(6n){
-  margin-right: 0px;
 
 }
+
 
 .photo-card{
   height: 100%;
+  border: 1px solid gray;
+  padding: 5px;
 }
 
 .img-thumb{
