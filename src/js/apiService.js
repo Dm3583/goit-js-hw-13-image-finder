@@ -4,14 +4,14 @@ console.log(accessKey);
 
 export default {
 
-    query: '',
+    pageNumber: 1,
+    objectsPerQuery: 12,
+
 
 
     fetchForQuery(query) {
-        return fetch(`https://pixabay.com/api/?key=${accessKey}&q=${query}`)
+        return fetch(`https://pixabay.com/api/?image_type=photo&orientation=horisontal&q=${query}&page=${this.pageNumber}&per_page=${this.objectsPerQuery}&key=${accessKey}`)
             .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.log(err));
     },
 
 

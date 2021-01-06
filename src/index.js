@@ -1,3 +1,3 @@
 import './styles.css';
-import './js/apiService';
-import './js/searchForQuery';
+import '../node_modules/material-design-icons/iconfont/material-icons.css';
+import './js/search';
