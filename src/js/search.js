@@ -24,47 +24,86 @@ function clearGallery() {
     gallery.innerHTML = "";
 }
 
+function isShowMore(totalAccessibleImg, shownObj) {
+    if (totalAccessibleImg - shownObj <= 0) {
+        return false;
+    }
+    return true;
+}
+
 function searchForQuery(e) {
+
     e.preventDefault();
 
     clearGallery();
 
-    if (!e.currentTarget.elements.query.value) {
+    apiService.query = e.currentTarget.elements.query.value;
+
+    if (!apiService.query
+        || apiService.query.match(/\s+/)
+        && !apiService.query.match(/\s+\w/)) {
+
+
+
+        console.log("enter something...");
+
+
+
         showMoreBtn.classList.add('is-hidden');
         return;
     }
-
-    apiService.query = e.currentTarget.elements.query.value;
-
-    apiService.resetPage();
-
-    apiService.fetchForQuery()
-        .then(data => {
-            renderCards(data.hits, imageCard);
-            if (gallery.childElementCount === apiService.objectsPerQuery) {
-                showMoreBtn.classList.remove('is-hidden');
-            } else {
-                showMoreBtn.classList.add('is-hidden');
-            }
-            scroll();
-        })
-        .catch(error => console.log(error));
+    apiService.resetPage(apiService);
+    fetchResults();
 }
 
-function showMore() {
-
+function fetchResults() {
     apiService.fetchForQuery()
         .then(data => {
-            if (data.hits.length < apiService.objectsPerQuery) {
-                renderCards(data.hits, imageCard);
-                showMoreBtn.classList.add('is-hidden');
-            } else {
-                renderCards(data.hits, imageCard);
+
+            const currentPage = apiService.pageNumber - 1;
+            const shownObj = currentPage * apiService.objectsPerQuery;
+            if (data.totalHits === 0) {
+
+
+                console.log("No matches. Try another query.");
+
+
+
+                return;
             }
+            if (currentPage === 1 && data.totalHits > apiService.objectsPerQuery) {
+
+
+
+                console.log(`For your query found ${data.totalHits} results`);
+
+
+
+            }
+
+
+
+
+            renderCards(data.hits, imageCard);
+            console.log(data);
+            // console.log("data.totalHits ", data.totalHits);
+            if (isShowMore(data.totalHits, shownObj)) {
+                showMoreBtn.classList.remove('is-hidden');
+            } else {
+
+
+                console.log("That is all results!");
+
+
+
+                showMoreBtn.classList.add('is-hidden');
+            };
             scroll();
         })
         .catch(error => console.log(error));
 }
 
 search.addEventListener('submit', searchForQuery);
-showMoreBtn.addEventListener('click', showMore);
+showMoreBtn.addEventListener('click', fetchResults);
+
+//query test cases: [dat, rat, freezer]
