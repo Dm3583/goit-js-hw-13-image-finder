@@ -1,11 +1,11 @@
-import apiService from './apiService';
+import ApiService from './apiService';
 import refs from './refs';
 import imageCard from '../templates/imageCard.hbs'
 
-const inp = refs.input;
+const apiService = new ApiService();
+
 const search = refs.form;
 const gallery = refs.gallery;
-const searchBtn = refs.searchBtn;
 const showMoreBtn = refs.showMoreBtn;
 
 function scroll() {
@@ -27,21 +27,21 @@ function clearGallery() {
 function searchForQuery(e) {
     e.preventDefault();
 
-    if (e.target !== searchBtn) {
-        return;
-    }
-    apiService.pageNumber = 1;
     clearGallery();
 
-    if (!inp.value) {
+    if (!e.currentTarget.elements.query.value) {
         showMoreBtn.classList.add('is-hidden');
         return;
     }
 
-    apiService.fetchForQuery(inp.value)
+    apiService.query = e.currentTarget.elements.query.value;
+
+    apiService.resetPage();
+
+    apiService.fetchForQuery()
         .then(data => {
             renderCards(data.hits, imageCard);
-            if (gallery.childElementCount === 12) {
+            if (gallery.childElementCount === apiService.objectsPerQuery) {
                 showMoreBtn.classList.remove('is-hidden');
             } else {
                 showMoreBtn.classList.add('is-hidden');
@@ -51,13 +51,11 @@ function searchForQuery(e) {
         .catch(error => console.log(error));
 }
 
-function addItems() {
+function showMore() {
 
-    apiService.pageNumber += 1;
-
-    apiService.fetchForQuery(inp.value)
+    apiService.fetchForQuery()
         .then(data => {
-            if (data.hits.length < 12) {
+            if (data.hits.length < apiService.objectsPerQuery) {
                 renderCards(data.hits, imageCard);
                 showMoreBtn.classList.add('is-hidden');
             } else {
@@ -68,5 +66,5 @@ function addItems() {
         .catch(error => console.log(error));
 }
 
-search.addEventListener('click', searchForQuery);
-showMoreBtn.addEventListener('click', addItems);
+search.addEventListener('submit', searchForQuery);
+showMoreBtn.addEventListener('click', showMore);
