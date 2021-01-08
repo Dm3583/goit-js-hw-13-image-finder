@@ -119,4 +119,8 @@ function fetchResults() {
 search.addEventListener('submit', searchForQuery);
 showMoreBtn.addEventListener('click', fetchResults);
 
+gallery.addEventListener('click', (e) => {
+    console.log(e.target)
+});
+
 //query test cases: [dat, rat, freezer]
