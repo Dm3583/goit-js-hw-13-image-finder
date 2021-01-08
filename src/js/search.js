@@ -1,6 +1,13 @@
 import ApiService from './apiService';
 import refs from './refs';
-import imageCard from '../templates/imageCard.hbs'
+import imageCard from '../templates/imageCard.hbs';
+import * as basicLightbox from 'basiclightbox';
+
+// const instance = basicLightbox.create(`
+//     <img src="assets/images/image.png" width="800" height="600">
+// `)
+
+// instance.show()
 
 const apiService = new ApiService();
 
