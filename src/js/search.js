@@ -88,7 +88,11 @@ function fetchResults() {
             console.log(data);
             // console.log("data.totalHits ", data.totalHits);
             if (isShowMore(data.totalHits, shownObj)) {
+
+
                 showMoreBtn.classList.remove('is-hidden');
+
+
             } else {
 
 
@@ -97,6 +101,8 @@ function fetchResults() {
 
 
                 showMoreBtn.classList.add('is-hidden');
+
+
             };
             scroll();
         })
