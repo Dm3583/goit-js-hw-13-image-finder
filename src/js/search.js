@@ -2,14 +2,11 @@ import ApiService from './apiService';
 import refs from './refs';
 import imageCard from '../templates/imageCard.hbs';
 import * as basicLightbox from 'basiclightbox';
-
-// const instance = basicLightbox.create(`
-//     <img src="assets/images/image.png" width="800" height="600">
-// `)
-
-// instance.show()
+import notify from './notify';
 
 const apiService = new ApiService();
+
+console.log(notify)
 
 const search = refs.form;
 const gallery = refs.gallery;
@@ -29,30 +26,39 @@ function renderCards(data, template) {
 
 function clearGallery() {
     gallery.innerHTML = "";
-}
+};
 
 function isShowMore(totalAccessibleImg, shownObj) {
     if (totalAccessibleImg - shownObj <= 0) {
         return false;
     }
     return true;
+};
+
+function showBigImg(e) {
+    if (e.target.tagName !== "IMG") {
+        return;
+    }
+    const instance = basicLightbox.create(`
+        <img src=${e.target.dataset.bigImg} width="100%">
+    `);
+    instance.show();
 }
 
 function searchForQuery(e) {
-
     e.preventDefault();
-
     clearGallery();
 
     apiService.query = e.currentTarget.elements.query.value;
 
-    if (!apiService.query
-        || apiService.query.match(/\s+/)
-        && !apiService.query.match(/\s+\w/)) {
+    if (!apiService.query ||
+        apiService.query.match(/\s+/) &&
+        !apiService.query.match(/\s+\w/)) {
 
 
 
         console.log("enter something...");
+        notify.error("enter something...");
 
 
 
@@ -118,9 +124,6 @@ function fetchResults() {
 
 search.addEventListener('submit', searchForQuery);
 showMoreBtn.addEventListener('click', fetchResults);
-
-gallery.addEventListener('click', (e) => {
-    console.log(e.target)
-});
+gallery.addEventListener('click', showBigImg);
 
 //query test cases: [dat, rat, freezer]
