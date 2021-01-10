@@ -1,27 +1,24 @@
 import PNotify from 'pnotify/dist/es/PNotify.js';
 import PNotifyButtons from 'pnotify/dist/es/PNotifyButtons.js';
-// PNotify.alert({ text: "hello" }).close();
+
+PNotify.defaults.delay = 5000;
+PNotify.defaults.shadow = true;
 
 export default {
 
-    error: function(message) {
-        return PNotify.error({
-            text: message,
-            closer: true,
-            delay: 4000,
-            shadow: true
+    message: function(text, type) {
+        return PNotify.[type]({
+            text: text,
         });
 
     },
+    // types: [success, info, error, alert]
+    // PNotify.success(options);PNotify.info(options);PNotify.error(options);PNotify.alert(options);
 
-
-
-
-    // PNotify.success(options);
-
-    // PNotify.info(options);
-
-    // PNotify.error(options);
-
-    // PNotify.alert(options);
-}
+    close: function() {
+        const closeNotifyBtn = document.querySelectorAll('.ui-pnotify-closer');
+        if (closeNotifyBtn) {
+            closeNotifyBtn.forEach(e => e.click());
+        };
+    },
+};

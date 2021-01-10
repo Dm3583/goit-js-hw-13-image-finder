@@ -1,129 +1,82 @@
 import ApiService from './apiService';
 import refs from './refs';
 import imageCard from '../templates/imageCard.hbs';
-import * as basicLightbox from 'basiclightbox';
 import notify from './notify';
+import renderService from './renderService';
+import ShowMoreBtn from './customBtn';
 
 const apiService = new ApiService();
-
-console.log(notify)
+const showMoreBtn = new ShowMoreBtn({
+    selector: '#show-more',
+    hidden: true,
+    messOnInit: 'Show more',
+    messOnStateChange: 'Loading...'
+});
+// console.log(showMoreBtn);
 
 const search = refs.form;
 const gallery = refs.gallery;
-const showMoreBtn = refs.showMoreBtn;
-
-function scroll() {
-    return window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth'
-    });
-};
-
-function renderCards(data, template) {
-    const markup = template(data);
-    gallery.insertAdjacentHTML('beforeend', markup);
-};
-
-function clearGallery() {
-    gallery.innerHTML = "";
-};
 
 function isShowMore(totalAccessibleImg, shownObj) {
-    if (totalAccessibleImg - shownObj <= 0) {
-        return false;
-    }
-    return true;
+    return totalAccessibleImg - shownObj > 0;
 };
-
-function showBigImg(e) {
-    if (e.target.tagName !== "IMG") {
-        return;
-    }
-    const instance = basicLightbox.create(`
-        <img src=${e.target.dataset.bigImg} width="100%">
-    `);
-    instance.show();
-}
 
 function searchForQuery(e) {
     e.preventDefault();
-    clearGallery();
-
+    renderService.clearHTML(gallery);
+    notify.close();
     apiService.query = e.currentTarget.elements.query.value;
-
     if (!apiService.query ||
         apiService.query.match(/\s+/) &&
         !apiService.query.match(/\s+\w/)) {
-
-
-
-        console.log("enter something...");
-        notify.error("enter something...");
-
-
-
-        showMoreBtn.classList.add('is-hidden');
+        notify.message("Enter something...", 'alert');
+        showMoreBtn.hide();
         return;
     }
-    apiService.resetPage(apiService);
+    apiService.resetPage();
     fetchResults();
 }
 
 function fetchResults() {
+    showMoreBtn.show();
+    showMoreBtn.disable();
     apiService.fetchForQuery()
         .then(data => {
 
             const currentPage = apiService.pageNumber - 1;
             const shownObj = currentPage * apiService.objectsPerQuery;
+
             if (data.totalHits === 0) {
-
-
-                console.log("No matches. Try another query.");
-
-
-
+                notify.message("No matches. Try another query.", 'alert');
+                showMoreBtn.hide();
                 return;
             }
-            if (currentPage === 1 && data.totalHits > apiService.objectsPerQuery) {
-
-
-
-                console.log(`For your query found ${data.totalHits} results`);
-
-
-
+            if (currentPage === 1) {
+                notify.message(`Found ${data.totalHits} results`, 'success');
             }
-
-
-
-
-            renderCards(data.hits, imageCard);
-            console.log(data);
-            // console.log("data.totalHits ", data.totalHits);
+            // console.log(data);
             if (isShowMore(data.totalHits, shownObj)) {
-
-
-                showMoreBtn.classList.remove('is-hidden');
-
-
+                showMoreBtn.show();
+                showMoreBtn.disable();
             } else {
-
-
-                console.log("That is all results!");
-
-
-
-                showMoreBtn.classList.add('is-hidden');
-
-
+                if (currentPage !== 1) {
+                    notify.message("There are all results!", 'info');
+                }
+                showMoreBtn.hide();
             };
-            scroll();
+
+            renderService.renderHTML(data.hits, imageCard, gallery);
+            renderService.scroll();
+            showMoreBtn.enable();
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.log(error);
+            notify.message(`Something went wrong... .Error ${error}`, 'error');
+        });
 }
 
 search.addEventListener('submit', searchForQuery);
-showMoreBtn.addEventListener('click', fetchResults);
-gallery.addEventListener('click', showBigImg);
+showMoreBtn.refs.button.addEventListener('click', fetchResults);
+gallery.addEventListener('click', renderService.showBigImg);
 
 //query test cases: [dat, rat, freezer]
