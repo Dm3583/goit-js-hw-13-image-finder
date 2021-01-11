@@ -44,7 +44,7 @@ function isEmptyResult(result) {
     return false;
 };
 
-function resultNotificationHandler(currPage, totalRes, shownRes) {
+function onSuccessResultHandler(currPage, totalRes, shownRes) {
     if (currPage === 1) {
         notify.message(`Found ${totalRes} results`, 'success');
     }
@@ -57,7 +57,7 @@ function resultNotificationHandler(currPage, totalRes, shownRes) {
         }
         showMoreBtn.hide();
     };
-}
+};
 
 function searchForQuery(e) {
     e.preventDefault();
@@ -83,7 +83,7 @@ function fetchResults() {
             if (isEmptyResult(data.totalHits)) {
                 return;
             }
-            resultNotificationHandler(currentPage, data.totalHits, shownObj)
+            onSuccessResultHandler(currentPage, data.totalHits, shownObj);
             renderService.renderHTML(data.hits, imageCard, gallery);
             renderService.scroll();
             showMoreBtn.enable();
