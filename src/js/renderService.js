@@ -1,22 +1,23 @@
 import * as basicLightbox from 'basiclightbox';
 
 export default {
-    scroll: function() {
+    scroll: function () {
         return window.scrollTo({
             top: document.documentElement.scrollHeight,
             behavior: 'smooth'
         });
     },
 
-    renderHTML: function(data, template, node) {
+    renderHTML: function (data, template, node) {
         const markup = template(data);
         node.insertAdjacentHTML('beforeend', markup);
     },
 
-    clearHTML: function(element) {
+    clearHTML: function (element) {
         element.innerHTML = "";
     },
-    showBigImg: function(e) {
+
+    showBigImg: function (e) {
         if (e.target.tagName !== "IMG") {
             return;
         }
@@ -25,4 +26,4 @@ export default {
         `);
         instance.show();
     },
-}
+};

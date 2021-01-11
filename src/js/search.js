@@ -12,7 +12,6 @@ const showMoreBtn = new ShowMoreBtn({
     messOnInit: 'Show more',
     messOnStateChange: 'Loading...'
 });
-// console.log(showMoreBtn);
 
 const search = refs.form;
 const gallery = refs.gallery;
@@ -26,7 +25,7 @@ function isEmptyInput(input) {
         notify.message("Enter something...", 'alert');
         showMoreBtn.hide();
         return true;
-    }
+    };
     return false;
 };
 
@@ -47,14 +46,14 @@ function onErrorHandler(error) {
 function onSuccessResultHandler(currPage, totalRes, shownRes) {
     if (currPage === 1) {
         notify.message(`Found ${totalRes} results`, 'success');
-    }
+    };
     if (isShowMore(totalRes, shownRes)) {
         showMoreBtn.show();
         showMoreBtn.disable();
     } else {
         if (currPage !== 1) {
             notify.message("There are all results!", 'info');
-        }
+        };
         showMoreBtn.hide();
     };
 };
@@ -89,7 +88,7 @@ function fetchResults() {
             showMoreBtn.enable();
         })
         .catch(onErrorHandler);
-}
+};
 
 search.addEventListener('submit', searchForQuery);
 showMoreBtn.refs.button.addEventListener('click', fetchResults);

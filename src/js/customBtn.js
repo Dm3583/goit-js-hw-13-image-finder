@@ -11,22 +11,17 @@ export default class Button {
         const refs = {};
         refs.button = document.querySelector(selector);
         refs.label = refs.button.querySelector('.label');
-        // refs.label.textContent = this.messOnInit;
-        // console.log(text);
-
         return refs;
     };
 
     enable() {
         this.refs.button.disabled = false;
         this.refs.label.textContent = this.messOnInit;
-        // console.log("enable");
     };
 
     disable() {
         this.refs.button.disabled = true;
         this.refs.label.textContent = this.messOnStateChange;
-        // console.log("disabled");
     };
 
     show() {
@@ -37,4 +32,4 @@ export default class Button {
         this.refs.button.classList.add('is-hidden');
     };
 
-}
+};
