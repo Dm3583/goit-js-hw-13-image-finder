@@ -21,21 +21,55 @@ function isShowMore(totalAccessibleImg, shownObj) {
     return totalAccessibleImg - shownObj > 0;
 };
 
+function isEmptyInput(input) {
+    if (!input || input.match(/\s+/) && !input.match(/\s+\w/)) {
+        notify.message("Enter something...", 'alert');
+        showMoreBtn.hide();
+        return true;
+    }
+    return false;
+};
+
+function onErrorHandler(error) {
+    console.log(error);
+    notify.message(`Something went wrong... .Error ${error}`, 'error');
+};
+
+function isEmptyResult(result) {
+    if (result === 0) {
+        notify.message("No matches. Try another query.", 'alert');
+        showMoreBtn.hide();
+        return true;
+    };
+    return false;
+};
+
+function resultNotificationHandler(currPage, totalRes, shownRes) {
+    if (currPage === 1) {
+        notify.message(`Found ${totalRes} results`, 'success');
+    }
+    if (isShowMore(totalRes, shownRes)) {
+        showMoreBtn.show();
+        showMoreBtn.disable();
+    } else {
+        if (currPage !== 1) {
+            notify.message("There are all results!", 'info');
+        }
+        showMoreBtn.hide();
+    };
+}
+
 function searchForQuery(e) {
     e.preventDefault();
     renderService.clearHTML(gallery);
     notify.close();
     apiService.query = e.currentTarget.elements.query.value;
-    if (!apiService.query ||
-        apiService.query.match(/\s+/) &&
-        !apiService.query.match(/\s+\w/)) {
-        notify.message("Enter something...", 'alert');
-        showMoreBtn.hide();
+    if (isEmptyInput(apiService.query)) {
         return;
     }
     apiService.resetPage();
     fetchResults();
-}
+};
 
 function fetchResults() {
     showMoreBtn.show();
@@ -46,33 +80,15 @@ function fetchResults() {
             const currentPage = apiService.pageNumber - 1;
             const shownObj = currentPage * apiService.objectsPerQuery;
 
-            if (data.totalHits === 0) {
-                notify.message("No matches. Try another query.", 'alert');
-                showMoreBtn.hide();
+            if (isEmptyResult(data.totalHits)) {
                 return;
             }
-            if (currentPage === 1) {
-                notify.message(`Found ${data.totalHits} results`, 'success');
-            }
-            // console.log(data);
-            if (isShowMore(data.totalHits, shownObj)) {
-                showMoreBtn.show();
-                showMoreBtn.disable();
-            } else {
-                if (currentPage !== 1) {
-                    notify.message("There are all results!", 'info');
-                }
-                showMoreBtn.hide();
-            };
-
+            resultNotificationHandler(currentPage, data.totalHits, shownObj)
             renderService.renderHTML(data.hits, imageCard, gallery);
             renderService.scroll();
             showMoreBtn.enable();
         })
-        .catch(error => {
-            console.log(error);
-            notify.message(`Something went wrong... .Error ${error}`, 'error');
-        });
+        .catch(onErrorHandler);
 }
 
 search.addEventListener('submit', searchForQuery);
