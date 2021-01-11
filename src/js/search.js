@@ -30,11 +30,6 @@ function isEmptyInput(input) {
     return false;
 };
 
-function onErrorHandler(error) {
-    console.log(error);
-    notify.message(`Something went wrong... .Error ${error}`, 'error');
-};
-
 function isEmptyResult(result) {
     if (result === 0) {
         notify.message("No matches. Try another query.", 'alert');
@@ -42,6 +37,11 @@ function isEmptyResult(result) {
         return true;
     };
     return false;
+};
+
+function onErrorHandler(error) {
+    console.log(error);
+    notify.message(`Something went wrong... .Error ${error}`, 'error');
 };
 
 function onSuccessResultHandler(currPage, totalRes, shownRes) {
