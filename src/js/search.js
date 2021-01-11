@@ -76,13 +76,13 @@ function fetchResults() {
     showMoreBtn.disable();
     apiService.fetchForQuery()
         .then(data => {
+            if (isEmptyResult(data.totalHits)) {
+                return;
+            };
 
             const currentPage = apiService.pageNumber - 1;
             const shownObj = currentPage * apiService.objectsPerQuery;
 
-            if (isEmptyResult(data.totalHits)) {
-                return;
-            }
             onSuccessResultHandler(currentPage, data.totalHits, shownObj);
             renderService.renderHTML(data.hits, imageCard, gallery);
             renderService.scroll();
